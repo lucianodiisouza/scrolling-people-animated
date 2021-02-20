@@ -4,7 +4,7 @@ I've created this quick project to take a look into React Native Animations modu
 
 ## Screenshot
 
-![Project 001](https://github.com/lucianodiisouza/scrolling-people-animated/tree/main/screenshots/screenshot.gif)
+![Scrolling](https://github.com/lucianodiisouza/scrolling-people-animated/blob/main/screenshots/screenshot.gif)
 
 ## Can i run it?
 
