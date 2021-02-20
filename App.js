@@ -1,19 +1,6 @@
 import * as React from "react";
-import {
-  StatusBar,
-  FlatList,
-  Image,
-  Animated,
-  Text,
-  View,
-  Dimensions,
-  StyleSheet,
-  TouchableOpacity,
-  Easing,
-  SafeAreaViewBase,
-  SafeAreaView,
-} from "react-native";
-const { width, height } = Dimensions.get("screen");
+import { Image, Animated, Text, View, StyleSheet } from "react-native";
+
 import faker from "faker";
 
 faker.seed(10);
@@ -31,11 +18,14 @@ const DATA = [...Array(30).keys()].map((_, i) => {
 });
 
 const BG_IMG =
-  "https://images.pexels.com/photos/1231265/pexels-photo-1231265.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260";
+  "https://images.pexels.com/photos/1722183/pexels-photo-1722183.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260";
 const SPACING = 8;
 const AVATAR_SIZE = 64;
+const ITEM_SIZE = AVATAR_SIZE + SPACING * 3;
 
 const App = () => {
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <Image
@@ -43,16 +33,46 @@ const App = () => {
         style={StyleSheet.absoluteFillObject}
         blurRadius={80}
       />
-      <FlatList
+      <Animated.FlatList
         data={DATA}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          {
+            useNativeDriver: true,
+          }
+        )}
         keyExtractor={(item) => item.key}
         contentContainerStyle={{
           padding: SPACING,
-          paddingTop: StatusBar.currentHeight || 42,
+          paddingTop: 42,
         }}
         renderItem={({ item, index }) => {
+          const inputRange = [
+            -1,
+            0,
+            ITEM_SIZE * index,
+            ITEM_SIZE * (index + 2),
+          ];
+
+          const opacityInputRange = [
+            -1,
+            0,
+            ITEM_SIZE * index,
+            ITEM_SIZE * (index + 1),
+          ];
+
+          const scale = scrollY.interpolate({
+            inputRange,
+            outputRange: [1, 1, 1, 0],
+          });
+
+          const opacity = scrollY.interpolate({
+            inputRange: opacityInputRange,
+            outputRange: [1, 1, 1, 0],
+          });
+
           return (
-            <View
+            <Animated.View
               style={{
                 flexDirection: "row",
                 padding: SPACING,
@@ -66,6 +86,8 @@ const App = () => {
                 },
                 shadowOpacity: 0.3,
                 shadowRadius: 10,
+                opacity,
+                transform: [{ scale }],
               }}
             >
               <Image
@@ -88,7 +110,7 @@ const App = () => {
                   {item.email}
                 </Text>
               </View>
-            </View>
+            </Animated.View>
           );
         }}
       />
